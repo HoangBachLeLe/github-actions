@@ -1,0 +1,17 @@
+name: trivy-scan
+on: workflow_dispatch
+
+jobs:
+  trivy:
+    runs-on: ubuntu-latest
+    container: 
+      image: aquasec/trivy
+    steps:
+      - name: scan
+        run: |
+          trivy image --format template --template "@contrib/html.tpl" -o report.html golang:1.12-alpine
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v3.1.2
+        with:
+         name: trivy-report
+         path: report.html
