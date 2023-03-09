@@ -1,6 +1,11 @@
 name: trivy-scan
 on: workflow_dispatch
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+  
 jobs:
   trivy:
     runs-on: ubuntu-latest
@@ -11,9 +16,17 @@ jobs:
         uses: actions/checkout@v3.3.0
       - name: scan
         run: |
-          trivy image --format template --template "@contrib/html.tpl" -o report.html golang:1.12-alpine
+          trivy image --format template --template "@contrib/html.tpl" -o index.html golang:1.12-alpine
+          
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v3.1.2
         with:
          name: trivy-report
-         path: report.html
+         path: index.html
+         
+      - name: Setup Pages
+        uses: actions/configure-pages@v3.0.4
+        
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1.2.4
